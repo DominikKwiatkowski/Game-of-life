@@ -1,0 +1,65 @@
+﻿<Window x:Class="GameOfLife.MainWindow"
+        x:Name="MainWindowName"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameOfLife"
+        xmlns:models="clr-namespace:GameOfLife.Models"
+        xmlns:converters="clr-namespace:GameOfLife.Converters"
+        xmlns:views="clr-namespace:GameOfLife.Views"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1080" Width="1080"
+        SizeChanged="WindowSizeChanged"
+        MinHeight="480" MinWidth="480">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/ImgButton.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+            <DataTemplate DataType="{x:Type models:Field}" x:Key="cellTemplate">
+                <Rectangle Fill="{Binding Path=FieldStatus, Converter={StaticResource StatusToBrushConverter}}"
+                           Width="{Binding ElementName=MainWindowName, Path=WidthCellSize}"
+                           Height="{Binding ElementName=MainWindowName, Path=HeightCellSize}"
+                           Stroke="Black">
+                    <Rectangle.InputBindings>
+                        <MouseBinding Gesture="LeftClick" Command="{Binding ElementName=MainWindowName, Path=ChangeStatusCommand}"
+                                      CommandParameter="{Binding}"/>
+                    </Rectangle.InputBindings>
+                </Rectangle>
+            </DataTemplate>
+            <DataTemplate x:Key="boardTemplate">
+                <ItemsControl ItemsSource="{Binding}" ItemTemplate="{DynamicResource cellTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="180" VerticalAlignment="Top" x:Name="StartPanel">
+                <views:SizeChooser Size="{Binding ElementName=MainWindowName, Path=WidthValue, Mode=TwoWay}" ChooserName="Width:" Margin="10"/>
+                <views:SizeChooser Size="{Binding ElementName=MainWindowName, Path=HeightValue, Mode=TwoWay}" ChooserName="Height:" Margin="10"/>
+                <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\start.png" ContentText="Start" x:Name="Start" Margin="100,40,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="180" VerticalAlignment="Top" Visibility="Collapsed" x:Name="GamePanel">
+                <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\back.png" ContentText="Previous" x:Name="Previous" Margin="0,40,0,0"/>
+                <views:SizeChooser Size="{Binding ElementName=MainWindowName, Path=NumberOfGenerations, Mode=TwoWay}" ChooserName="Generations:" Margin="10" MinValue="1"/>
+                <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\forward.png" ContentText="Next" x:Name="Next" Margin="0,40,0,0" />
+                <Button Style="{StaticResource ImgButton}" Tag="D:\domik\Documents\PLA\GameOfLife\Img\save.png" Content="Save" Margin="40,40,0,0" Click="Save"/>
+                <Button Style="{StaticResource ImgButton}" Tag="D:\domik\Documents\PLA\GameOfLife\Img\load.png" Content="Load" Margin="40,40,0,0" Click="Load"/>
+                <CheckBox IsChecked="{Binding Dump}" Margin="40,40,0,0">Dump</CheckBox>
+                <CheckBox IsChecked="{Binding Advanced}" Margin="40,40,0,0">Advanced Mode</CheckBox>
+            </StackPanel>
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="BoardGrid">
+                <ItemsControl x:Name="Board" ItemTemplate="{DynamicResource boardTemplate}"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
