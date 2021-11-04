@@ -43,7 +43,14 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </DataTemplate>
-
+            <DataTemplate DataType="{x:Type models:GameShape}" x:Key="ShapeTemplate">
+                <Button Style="{StaticResource ImgButton}" Tag= "{Binding Path=FilePath}" Content="{Binding Path=Name}" Margin="10">
+                    <Button.InputBindings>
+                        <MouseBinding Gesture="LeftClick" Command="{Binding ElementName=MainWindowName, Path=ChooseShapeCommand}"
+                                      CommandParameter="{Binding}"/>
+                    </Button.InputBindings>
+                </Button>
+            </DataTemplate>
             <ObjectDataProvider x:Key="StatusValues"
                                 MethodName="GetValues"
                                 ObjectType="{x:Type System:Enum}">
@@ -86,6 +93,9 @@
                 <Grid x:Name="BoardGrid">
                     <ItemsControl x:Name="Board" ItemTemplate="{DynamicResource boardTemplate}"/>
                 </Grid>
+                <ScrollViewer>
+                    <ItemsControl x:Name="ShapeMenagerItemControl" ItemTemplate="{DynamicResource ShapeTemplate}"/>
+                </ScrollViewer>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 using GameOfLife.Common;
 using GameOfLife.Converters;
 using GameOfLife.Enums;
@@ -37,6 +38,9 @@ namespace GameOfLife
         public int HeightCellSize { get; set; }
         public int NumberOfGenerations { get; set; } = 1;
 
+        public ShapeMenager ShapeMenager { get; set; }
+
+        public string ImgDirectory { get; set; }
         private bool _advanced;
         public bool Advanced
         {
@@ -58,6 +62,8 @@ namespace GameOfLife
         }
 
         public bool Dump { get; set; } = false;
+        public bool ShapeMode { get; set; } = false;
+        public GameShape CurrentShape { get; set; }
 
         public MainWindow()
         {
@@ -66,6 +72,8 @@ namespace GameOfLife
             Start.ExecuteMethod += StartGame;
             Next.ExecuteMethod += NextTurn;
             Previous.ExecuteMethod += PreviousTurn;
+            ImgDirectory = System.IO.Directory.CreateDirectory("ImgDir").FullName;
+            ShapeMenager = new ShapeMenager("GameShapes", ImgDirectory);
         }
 
         private void StartGame(object sender, EventArgs e)
@@ -74,6 +82,7 @@ namespace GameOfLife
             WidthCellSize = WidthBoardSize / WidthValue;
             HeightCellSize = HeightBoardSize / HeightValue;
             Board.ItemsSource = board.Fields;
+            ShapeMenagerItemControl.ItemsSource = ShapeMenager.ShapeList;
             StartPanel.Visibility = Visibility.Collapsed;
             GamePanel.Visibility = Visibility.Visible;
             GameBoardPanel.Visibility = Visibility.Visible;
@@ -82,15 +91,30 @@ namespace GameOfLife
         public ICommand ChangeStatusCommand { get { return new RelayCommand<Field>(ChangeStatus); } }
         public void ChangeStatus(Field field)
         {
-            board.AddToLast(field);
-            if (field.isAlive())
-                field.FieldStatus = Status.Dead;
+            if (ShapeMode)
+            {
+                board.addShape(CurrentShape, field);
+                ShapeMode = false;
+            }
             else
-                field.FieldStatus = Status.Alive;
+            {
+                board.AddToLast(field);
+                if (field.isAlive())
+                    field.FieldStatus = Status.Dead;
+                else
+                    field.FieldStatus = Status.Alive;
+            }
 
             if(Advanced)
                 board.Recalculate();
             CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
+        }
+
+        public ICommand ChooseShapeCommand { get { return new RelayCommand<GameShape>(ChooseShape); } }
+        public void ChooseShape(GameShape shape)
+        {
+            ShapeMode = !ShapeMode;
+            CurrentShape = shape;
         }
 
         private void NextTurn(object sender, EventArgs e)

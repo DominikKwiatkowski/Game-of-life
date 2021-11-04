@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Xml.Serialization;
 using GameOfLife.Common;
 using GameOfLife.Converters;
@@ -246,23 +247,8 @@ namespace GameOfLife.Models
 
         public void Dump(int dumpWidth, int dumpHeight, int widthCellSize, int heightCellSize)
         {
-            RenderTargetBitmap bitmap = new RenderTargetBitmap(dumpWidth, dumpHeight, 96,96, PixelFormats.Default);
-            DrawingVisual dVisual = new DrawingVisual();
-            using (DrawingContext dc = dVisual.RenderOpen())
-            {
-                for (int i = 0; i < Height; i++)
-                {
-                    for (int j = 0; j < Width; j++)
-                    {
-                        dc.DrawRectangle(
-                            (Brush)new StatusToBrushConverter().Convert(Fields[i][j].FieldStatus, null, null,
-                                CultureInfo.CurrentCulture),
-                            new Pen(Brushes.Black, 1),
-                            new Rect(j * widthCellSize, i * heightCellSize, widthCellSize, heightCellSize));
-                    }
-                }
-            }
-            bitmap.Render(dVisual);
+            RenderTargetBitmap bitmap = BitmapCreator.MakeBitmap(dumpWidth, dumpHeight, widthCellSize, heightCellSize,
+                Height, Width, Fields);
             System.IO.Directory.CreateDirectory("Dump");
             using (FileStream stream = new FileStream($"Dump//Gen{Generation}.bmp", FileMode.Create))
             {
@@ -277,7 +263,6 @@ namespace GameOfLife.Models
             if (Generation > 1)
             {
                 List<Change> listOfChanges = History[^1];
-
 
                 Tuple<int, int> pos = FindPos(field);
 
@@ -294,6 +279,29 @@ namespace GameOfLife.Models
             }
         }
 
+        public bool addShape(GameShape shape, Field field)
+        {
+            Tuple<int, int> pos = FindPos(field);
+            if (pos.Item1 + shape.Height < Height &&
+                pos.Item2 + shape.Width < Width)
+            {
+                for (int i = 0; i < shape.Height; i++)
+                {
+                    for (int j = 0; j < shape.Width; j++)
+                    {
+                        if (Fields[pos.Item1 + i][pos.Item2 + j].isAlive() != shape.Fields[i][j].isAlive())
+                        {
+                            AddToLast(Fields[pos.Item1 + i][pos.Item2 + j]);
+                            Fields[pos.Item1 + i][pos.Item2 + j].FieldStatus = shape.Fields[i][j].FieldStatus;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
         private Tuple<int, int> FindPos(Field field)
         {
             int i, j = 0;
