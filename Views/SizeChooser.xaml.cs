@@ -22,6 +22,9 @@ namespace GameOfLife.Views
     /// </summary>
     public partial class SizeChooser : UserControl
     {
+        /// <summary>
+        /// Max Value property definition.
+        /// </summary>
         public int MaxValue
         {
             get { return (int)GetValue(MaxValueProperty); }
@@ -31,6 +34,9 @@ namespace GameOfLife.Views
         public static readonly DependencyProperty MaxValueProperty =
             DependencyProperty.Register("MaxValue", typeof(int), typeof(SizeChooser), new UIPropertyMetadata(99));
 
+        /// <summary>
+        /// Min Value property definition.
+        /// </summary>
         public int MinValue
         {
             get { return (int)GetValue(MinValueProperty); }
@@ -40,6 +46,9 @@ namespace GameOfLife.Views
         public static readonly DependencyProperty MinValueProperty =
             DependencyProperty.Register("MinValue", typeof(int), typeof(SizeChooser), new UIPropertyMetadata(8));
 
+        /// <summary>
+        /// Size property definition.
+        /// </summary>
         public int Size
         {
             get { return (int)GetValue(ValueProperty); }
@@ -49,6 +58,9 @@ namespace GameOfLife.Views
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register("Size", typeof(int), typeof(SizeChooser), new UIPropertyMetadata(14));
 
+        /// <summary>
+        /// Name property definition.
+        /// </summary>
         public string ChooserName
         {
             get { return (string)GetValue(ChooserNameProperty); }
@@ -57,42 +69,59 @@ namespace GameOfLife.Views
 
         public static readonly DependencyProperty ChooserNameProperty =
             DependencyProperty.Register("ChooserName", typeof(string), typeof(SizeChooser), new UIPropertyMetadata(""));
+
         public SizeChooser()
         {
             InitializeComponent();
             DataContext = this;
         }
 
+        /// <summary>
+        /// Number validation rules.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             bool match = regex.IsMatch(e.Text);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
+        /// <summary>
+        /// Check if size can be increment.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UpCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = Size < MaxValue;
         }
 
+        /// <summary>
+        /// Increment size.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Size++;
         }
 
+        /// <summary>
+        /// Check if size can be decremented.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DownCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = Size > MinValue;
         }
+
+        /// <summary>
+        /// Decrement size.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DownCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Size--;

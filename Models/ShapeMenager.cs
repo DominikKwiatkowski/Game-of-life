@@ -10,8 +10,13 @@ namespace GameOfLife.Models
     {
         public List<GameShape> ShapeList { get; set; } = new List<GameShape>();
         const int imgSize = 100;
-        // Get all GameShapes from files in /GameShape directory
-        public ShapeMenager(string directory, string imgDir)
+
+        /// <summary>
+        /// Get all shapes from given directory and create image of them.
+        /// </summary>
+        /// <param name="directory">Directory from we load shapes</param>
+        /// <param name="imgDirectory">Target image directory</param>
+        public ShapeMenager(string directory, string imgDirectory)
         {
             //Get all text files in directory
             try
@@ -29,13 +34,12 @@ namespace GameOfLife.Models
             {
 
             }
+
             foreach (var shape in ShapeList)
             {
-                shape.CreateShapeImage(imgSize, imgSize, imgDir);
+                shape.CreateShapeImage(imgSize, imgSize, imgDirectory);
 
             }
-
         }
-
     }
 }

@@ -45,6 +45,7 @@ namespace GameOfLife
         public bool Advanced
         {
             get { return _advanced;}
+            // If advanced value change, we have to recalculate board.
             set
             {
                 _advanced = value;
@@ -69,13 +70,21 @@ namespace GameOfLife
         {
             InitializeComponent();
             DataContext = this;
+
+            // Add methods to animated buttons, it must be done via code for some reason.
             Start.ExecuteMethod += StartGame;
             Next.ExecuteMethod += NextTurn;
             Previous.ExecuteMethod += PreviousTurn;
+
             ImgDirectory = System.IO.Directory.CreateDirectory("ImgDir").FullName;
             ShapeMenager = new ShapeMenager("GameShapes", ImgDirectory);
         }
 
+        /// <summary>
+        /// On click method, when user will define board size and begin game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartGame(object sender, EventArgs e)
         {
             board = new Board(WidthValue, HeightValue);
@@ -89,6 +98,12 @@ namespace GameOfLife
         }
 
         public ICommand ChangeStatusCommand { get { return new RelayCommand<Field>(ChangeStatus); } }
+
+        /// <summary>
+        /// Change status method for fields. If we are in ShapeMode, it will produce shape,
+        /// otherwise it will change live status.
+        /// </summary>
+        /// <param name="field">field which was clicked</param>
         public void ChangeStatus(Field field)
         {
             if (ShapeMode)
@@ -111,12 +126,22 @@ namespace GameOfLife
         }
 
         public ICommand ChooseShapeCommand { get { return new RelayCommand<GameShape>(ChooseShape); } }
+
+        /// <summary>
+        /// Shape button left click method. It will remember chosen shape and turn on shape mode
+        /// </summary>
+        /// <param name="shape"></param>
         public void ChooseShape(GameShape shape)
         {
             ShapeMode = !ShapeMode;
             CurrentShape = shape;
         }
 
+        /// <summary>
+        /// Count next turns, depending on number of turns defined by user
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NextTurn(object sender, EventArgs e)
         {
             if (Dump)
@@ -130,6 +155,11 @@ namespace GameOfLife
             CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
 
+        /// <summary>
+        /// Restore previous turns, depending on number of turns defined by user
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PreviousTurn(object sender, EventArgs e)
         {
             if (Dump)
@@ -143,6 +173,11 @@ namespace GameOfLife
             CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
 
+        /// <summary>
+        /// Save current board to file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Save(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -153,6 +188,11 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Load board from file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Load(object sender, EventArgs e)
         {
             OpenFileDialog saveFileDialog = new OpenFileDialog();
@@ -168,6 +208,11 @@ namespace GameOfLife
             }
         }
 
+        /// <summary>
+        /// Recalculate board and cell sizes when window size change.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void WindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
 

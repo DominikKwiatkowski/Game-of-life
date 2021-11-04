@@ -20,6 +20,9 @@ namespace GameOfLife.Views
     /// </summary>
     public partial class AnimatedButton : UserControl
     {
+        /// <summary>
+        /// Path to image property definition.
+        /// </summary>
         public String PathToImage
         {
             get { return (string)GetValue(ImageProperty); }
@@ -29,6 +32,9 @@ namespace GameOfLife.Views
         public static readonly DependencyProperty ImageProperty =
             DependencyProperty.Register("PathToImage", typeof(string), typeof(AnimatedButton), new UIPropertyMetadata(""));
 
+        /// <summary>
+        /// ContextText property definition.
+        /// </summary>
         public String ContentText
         {
             get { return (string)GetValue(ContentTextProperty); }
@@ -37,6 +43,7 @@ namespace GameOfLife.Views
 
         public static readonly DependencyProperty ContentTextProperty =
             DependencyProperty.Register("ContentText", typeof(string), typeof(AnimatedButton), new UIPropertyMetadata(""));
+
         public AnimatedButton()
         {
             InitializeComponent();

@@ -9,6 +9,9 @@ using GameOfLife.Enums;
 
 namespace GameOfLife.Converters
 {
+    /// <summary>
+    /// Converts Status to String.
+    /// </summary>
     [ValueConversion(typeof(Status), typeof(String))]
     public class StatusToStringConverter : IValueConverter
     {

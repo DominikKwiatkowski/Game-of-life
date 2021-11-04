@@ -18,6 +18,9 @@ using Microsoft.Win32;
 
 namespace GameOfLife.Models
 {
+    /// <summary>
+    /// Represents game of life board and all business operations connected ti it.
+    /// </summary>
     public class Board
     {
         public List<List<Field>> Fields { get; set; } = new List<List<Field>>();
@@ -26,6 +29,11 @@ namespace GameOfLife.Models
         public int Generation = 1;
         public List<List<Change>> History { get; set; } = new List<List<Change>>();
 
+        /// <summary>
+        /// Create board of given size.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public Board(int width, int height)
         {
             Width = width;
@@ -42,13 +50,20 @@ namespace GameOfLife.Models
 
         public Board() { }
 
+        /// <summary>
+        /// Recalculate all states to be in advanced mode.
+        /// </summary>
         public void Recalculate()
         {
             BoardSpecialToNormal();
-            ApplyPreviosuStatus();
+            ApplyPreviousStatus();
             ApplyFutureStatus();
         }
 
+        /// <summary>
+        /// Calculate next generation status.
+        /// </summary>
+        /// <param name="isAdvanced">true if calculation should be done in advance mode</param>
         public void NextGen(bool isAdvanced)
         {
             if (isAdvanced)
@@ -61,6 +76,10 @@ namespace GameOfLife.Models
             }
         }
 
+        /// <summary>
+        /// Restore previous generation.
+        /// </summary>
+        /// <param name="isAdvanced"></param>
         public void PreviousGen(bool isAdvanced)
         {
             if (isAdvanced)
@@ -72,14 +91,21 @@ namespace GameOfLife.Models
                 PreviousGenNormal();
             }
         }
+
+        /// <summary>
+        /// Calculate next gen and apply advanced status.
+        /// </summary>
         public void NextGenAdvance()
         {
             BoardSpecialToNormal();
             NextGenNormal();
-            ApplyPreviosuStatus();
+            ApplyPreviousStatus();
             ApplyFutureStatus();
         }
 
+        /// <summary>
+        /// Calculate next generation.
+        /// </summary>
         public void NextGenNormal()
         {
             Generation++;
@@ -93,6 +119,9 @@ namespace GameOfLife.Models
             History.Add(listOfChanges);
         }
 
+        /// <summary>
+        /// Restore previous generation from history.
+        /// </summary>
         public void PreviousGenNormal()
         {
             if (Generation > 1)
@@ -109,28 +138,37 @@ namespace GameOfLife.Models
             }
         }
 
+        /// <summary>
+        /// Restore previous generation and apply advanced status.
+        /// </summary>
         public void PreviousGenAdvanced()
         {
             if (Generation > 1)
             {
                 BoardSpecialToNormal();
                 PreviousGenNormal();
-                ApplyPreviosuStatus();
+                ApplyPreviousStatus();
                 ApplyFutureStatus();
             }
         }
 
+        /// <summary>
+        /// Cast board in special mode to normal.
+        /// </summary>
         public void BoardSpecialToNormal()
         {
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    Fields[i][j].specialToNormal();
+                    Fields[i][j].SpecialToNormal();
                 }
             }
         }
 
+        /// <summary>
+        /// Apply status connected to future states.
+        /// </summary>
         public void ApplyFutureStatus()
         {
             List<Change> listOfChanges = CalculateChangeList();
@@ -147,7 +185,10 @@ namespace GameOfLife.Models
             }
         }
 
-        public void ApplyPreviosuStatus()
+        /// <summary>
+        /// Apply status connected to history.
+        /// </summary>
+        public void ApplyPreviousStatus()
         {
             if (Generation > 1)
             {
@@ -166,6 +207,10 @@ namespace GameOfLife.Models
             }
         }
 
+        /// <summary>
+        /// Calculate all changes made in next generation
+        /// </summary>
+        /// <returns>List of changes in next generation.</returns>
         private List<Change> CalculateChangeList()
         {
             List<Change> listOfChanges = new List<Change>();
@@ -174,15 +219,15 @@ namespace GameOfLife.Models
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    if ((!Fields[i][j].isAlive()) &&
-                        (NumberOfNeighbours(i, j) == 3))
+                    if ((!Fields[i][j].IsAlive()) &&
+                        (NumberOfNeighbors(i, j) == 3))
                     {
                         listOfChanges.Add(new Change(
                             i, j, Status.Dead, Status.Alive));
                     }
-                    else if ((Fields[i][j].isAlive()) &&
-                             ((NumberOfNeighbours(i, j) != 3) && (
-                                 NumberOfNeighbours(i, j) != 2)))
+                    else if ((Fields[i][j].IsAlive()) &&
+                             ((NumberOfNeighbors(i, j) != 3) && (
+                                 NumberOfNeighbors(i, j) != 2)))
                     {
                         listOfChanges.Add(new Change(
                             i, j, Status.Alive, Status.Dead));
@@ -193,58 +238,71 @@ namespace GameOfLife.Models
             return listOfChanges;
         }
 
-        private int NumberOfNeighbours(int yPos, int xPos)
+        /// <summary>
+        /// Calculate number of neighbors.
+        /// </summary>
+        /// <param name="yPos"> Y position of field</param>
+        /// <param name="xPos"> X position of field</param>
+        /// <returns></returns>
+        private int NumberOfNeighbors(int yPos, int xPos)
         {
-            int numberOfNeighbours = 0;
+            int numberOfNeighbors = 0;
             if (xPos > 0)
             {
-                if ((yPos > 0) && (Fields[yPos - 1][xPos - 1].isAlive()))
+                if ((yPos > 0) && (Fields[yPos - 1][xPos - 1].IsAlive()))
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
 
-                if (Fields[yPos][xPos - 1].isAlive())
+                if (Fields[yPos][xPos - 1].IsAlive())
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
 
-                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos - 1].isAlive()))
+                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos - 1].IsAlive()))
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
             }
 
-            if ((yPos > 0) && (Fields[yPos - 1][xPos].isAlive()))
+            if ((yPos > 0) && (Fields[yPos - 1][xPos].IsAlive()))
             {
-                numberOfNeighbours++;
+                numberOfNeighbors++;
             }
 
-            if ((yPos < Height - 1) && (Fields[yPos + 1][xPos].isAlive()))
+            if ((yPos < Height - 1) && (Fields[yPos + 1][xPos].IsAlive()))
             {
-                numberOfNeighbours++;
+                numberOfNeighbors++;
             }
 
             if (xPos < Width - 1)
             {
-                if ((yPos > 0) && (Fields[yPos - 1][xPos + 1].isAlive()))
+                if ((yPos > 0) && (Fields[yPos - 1][xPos + 1].IsAlive()))
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
 
-                if (Fields[yPos][xPos + 1].isAlive())
+                if (Fields[yPos][xPos + 1].IsAlive())
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
 
-                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos + 1].isAlive()))
+                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos + 1].IsAlive()))
                 {
-                    numberOfNeighbours++;
+                    numberOfNeighbors++;
                 }
             }
 
-            return numberOfNeighbours;
+            return numberOfNeighbors;
         }
 
+        /// <summary>
+        /// Dump current board to image and save it under dump path.
+        /// </summary>
+        /// <param name="dumpWidth">Width of bitmap</param>
+        /// <param name="dumpHeight">Height of bitmap</param>
+        /// <param name="widthCellSize">width of each cell on image</param>
+        /// <param name="heightCellSize">height of each cell on image</param>
         public void Dump(int dumpWidth, int dumpHeight, int widthCellSize, int heightCellSize)
         {
             RenderTargetBitmap bitmap = BitmapCreator.MakeBitmap(dumpWidth, dumpHeight, widthCellSize, heightCellSize,
@@ -258,6 +316,10 @@ namespace GameOfLife.Models
             }
         }
 
+        /// <summary>
+        /// Appends changes from outside board to history. Note that this should be call BEFORE change.
+        /// </summary>
+        /// <param name="field">Field to be changed</param>
         public void AddToLast(Field field)
         {
             if (Generation > 1)
@@ -266,7 +328,7 @@ namespace GameOfLife.Models
 
                 Tuple<int, int> pos = FindPos(field);
 
-                if (field.isAlive())
+                if (field.IsAlive())
                 {
                     listOfChanges.Add(new Change(
                         pos.Item1, pos.Item2, Status.Alive, Status.Dead));
@@ -279,7 +341,13 @@ namespace GameOfLife.Models
             }
         }
 
-        public bool addShape(GameShape shape, Field field)
+        /// <summary>
+        /// Add shape to board.
+        /// </summary>
+        /// <param name="shape">Shape to be added.</param>
+        /// <param name="field">Left top field on which it will be added</param>
+        /// <returns></returns>
+        public bool AddShape(GameShape shape, Field field)
         {
             Tuple<int, int> pos = FindPos(field);
             if (pos.Item1 + shape.Height < Height &&
@@ -289,7 +357,7 @@ namespace GameOfLife.Models
                 {
                     for (int j = 0; j < shape.Width; j++)
                     {
-                        if (Fields[pos.Item1 + i][pos.Item2 + j].isAlive() != shape.Fields[i][j].isAlive())
+                        if (Fields[pos.Item1 + i][pos.Item2 + j].IsAlive() != shape.Fields[i][j].IsAlive())
                         {
                             AddToLast(Fields[pos.Item1 + i][pos.Item2 + j]);
                             Fields[pos.Item1 + i][pos.Item2 + j].FieldStatus = shape.Fields[i][j].FieldStatus;
@@ -302,6 +370,12 @@ namespace GameOfLife.Models
 
             return false;
         }
+
+        /// <summary>
+        /// Find coordinates of field
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns>Tuple(ypos,xpos) position of field</returns>
         private Tuple<int, int> FindPos(Field field)
         {
             int i, j = 0;

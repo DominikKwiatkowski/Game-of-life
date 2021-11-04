@@ -8,8 +8,17 @@ using System.Xml.Serialization;
 
 namespace GameOfLife.Common
 {
+    /// <summary>
+    /// Common static utils unconnected with project
+    /// </summary>
     static class CommonUtils
     {
+        /// <summary>
+        /// Dump object to xml file.
+        /// </summary>
+        /// <typeparam name="T">Type of object</typeparam>
+        /// <param name="filePath">Path of save file</param>
+        /// <param name="objectToWrite">Object to be saved</param>
         public static void WriteToXmlFile<T>(string filePath, T objectToWrite) where T : new()
         {
             TextWriter writer = null;
@@ -26,6 +35,12 @@ namespace GameOfLife.Common
             }
         }
 
+        /// <summary>
+        /// Read object from xml file.
+        /// </summary>
+        /// <typeparam name="T">Type of object</typeparam>
+        /// <param name="filePath">Path of load file</param>
+        /// <returns>Object loaded from file</returns>
         public static T ReadFromXmlFile<T>(string filePath) where T : new()
         {
             TextReader reader = null;

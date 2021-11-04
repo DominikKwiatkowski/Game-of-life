@@ -13,14 +13,21 @@ namespace GameOfLife.Models
     {
         public Status FieldStatus { get; set; }= Status.Dead;
 
-        public bool isAlive()
+        /// <summary>
+        /// Check if object is alive.
+        /// </summary>
+        /// <returns>true if alive, false otherwise</returns>
+        public bool IsAlive()
         {
             return FieldStatus is Status.Alive or Status.WillDie or Status.Born;
         }
 
-        public void specialToNormal()
+        /// <summary>
+        /// Cast advanced mode to normal one.
+        /// </summary>
+        public void SpecialToNormal()
         {
-            if (isAlive())
+            if (IsAlive())
             {
                 FieldStatus = Status.Alive;
             }

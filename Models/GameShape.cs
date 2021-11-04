@@ -18,6 +18,11 @@ namespace GameOfLife.Models
         public string Name { get; set; }
         public string FilePath { get; set; } = "";
 
+        /// <summary>
+        /// Creates game shape of given size.
+        /// </summary>
+        /// <param name="width">Width of shape</param>
+        /// <param name="height">Height of shape</param>
         public GameShape(int width, int height)
         {
             Width = width;
@@ -32,14 +37,20 @@ namespace GameOfLife.Models
             }
         }
 
-        public static GameShape ReadFromFile(string fileName)
+        /// <summary>
+        /// Read shape from given file.
+        /// </summary>
+        /// <param name="filePath">Path to shape definition</param>
+        /// <returns></returns>
+        public static GameShape ReadFromFile(string filePath)
         {
-            string[] lines = System.IO.File.ReadAllLines(fileName);
+            string[] lines = System.IO.File.ReadAllLines(filePath);
 
             int width = lines[0].Length;
             int height = lines.Length;
             GameShape gameShape = new GameShape(width, height);
-            gameShape.Name = Path.GetFileNameWithoutExtension(fileName);
+            gameShape.Name = Path.GetFileNameWithoutExtension(filePath);
+
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -50,9 +61,16 @@ namespace GameOfLife.Models
                     }
                 }
             }
+
             return gameShape;
         }
 
+        /// <summary>
+        /// Create from this shape an bitmap image.
+        /// </summary>
+        /// <param name="dumpWidth">Width of Image</param>
+        /// <param name="dumpHeight">Height of Image</param>
+        /// <param name="pathToSave">Path to which file will be saved</param>
         public void CreateShapeImage(int dumpWidth, int dumpHeight, string pathToSave)
         {
             int widthCellSize = dumpWidth / Width;
