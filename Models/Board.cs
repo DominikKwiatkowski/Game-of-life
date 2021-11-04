@@ -23,7 +23,6 @@ namespace GameOfLife.Models
         public int Width { get; set; }
         public int Height { get; set; }
         public int Generation = 1;
-        public static readonly int DefaultSize = 16;
         public List<List<Change>> History { get; set; } = new List<List<Change>>();
 
         public Board(int width, int height)
@@ -120,7 +119,7 @@ namespace GameOfLife.Models
             }
         }
 
-        private void BoardSpecialToNormal()
+        public void BoardSpecialToNormal()
         {
             for (int i = 0; i < Height; i++)
             {
@@ -193,50 +192,50 @@ namespace GameOfLife.Models
             return listOfChanges;
         }
 
-        private int NumberOfNeighbours(int xPos, int yPos)
+        private int NumberOfNeighbours(int yPos, int xPos)
         {
             int numberOfNeighbours = 0;
             if (xPos > 0)
             {
-                if ((yPos > 0) && (Fields[xPos - 1][yPos - 1].isAlive()))
+                if ((yPos > 0) && (Fields[yPos - 1][xPos - 1].isAlive()))
                 {
                     numberOfNeighbours++;
                 }
 
-                if (Fields[xPos - 1][yPos].isAlive())
+                if (Fields[yPos][xPos - 1].isAlive())
                 {
                     numberOfNeighbours++;
                 }
 
-                if ((yPos < Height - 1) && (Fields[xPos - 1][yPos + 1].isAlive()))
+                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos - 1].isAlive()))
                 {
                     numberOfNeighbours++;
                 }
             }
 
-            if ((yPos > 0) && (Fields[xPos][yPos - 1].isAlive()))
+            if ((yPos > 0) && (Fields[yPos - 1][xPos].isAlive()))
             {
                 numberOfNeighbours++;
             }
 
-            if ((yPos < Height - 1) && (Fields[xPos][yPos + 1].isAlive()))
+            if ((yPos < Height - 1) && (Fields[yPos + 1][xPos].isAlive()))
             {
                 numberOfNeighbours++;
             }
 
             if (xPos < Width - 1)
             {
-                if ((yPos > 0) && (Fields[xPos + 1][yPos - 1].isAlive()))
+                if ((yPos > 0) && (Fields[yPos - 1][xPos + 1].isAlive()))
                 {
                     numberOfNeighbours++;
                 }
 
-                if (Fields[xPos + 1][yPos].isAlive())
+                if (Fields[yPos][xPos + 1].isAlive())
                 {
                     numberOfNeighbours++;
                 }
 
-                if ((yPos < Height - 1) && (Fields[xPos + 1][yPos + 1].isAlive()))
+                if ((yPos < Height - 1) && (Fields[yPos + 1][xPos + 1].isAlive()))
                 {
                     numberOfNeighbours++;
                 }
@@ -251,20 +250,21 @@ namespace GameOfLife.Models
             DrawingVisual dVisual = new DrawingVisual();
             using (DrawingContext dc = dVisual.RenderOpen())
             {
-                for (int i = 0; i < Width; i++)
+                for (int i = 0; i < Height; i++)
                 {
-                    for (int j = 0; j < Height; j++)
+                    for (int j = 0; j < Width; j++)
                     {
                         dc.DrawRectangle(
                             (Brush)new StatusToBrushConverter().Convert(Fields[i][j].FieldStatus, null, null,
                                 CultureInfo.CurrentCulture),
                             new Pen(Brushes.Black, 1),
-                            new Rect(i * widthCellSize, j * heightCellSize, widthCellSize, heightCellSize));
+                            new Rect(j * widthCellSize, i * heightCellSize, widthCellSize, heightCellSize));
                     }
                 }
             }
             bitmap.Render(dVisual);
-            using (FileStream stream = new FileStream($"Gen{Generation}.bmp", FileMode.Create))
+            System.IO.Directory.CreateDirectory("Dump");
+            using (FileStream stream = new FileStream($"Dump//Gen{Generation}.bmp", FileMode.Create))
             {
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(bitmap));
@@ -297,9 +297,9 @@ namespace GameOfLife.Models
         private Tuple<int, int> FindPos(Field field)
         {
             int i, j = 0;
-            for (i = 0; i < Width; i++)
+            for (i = 0; i < Height; i++)
             {
-                for (j = 0; j < Height; j++)
+                for (j = 0; j < Width; j++)
                 {
                     if (Fields[i][j].Equals(field))
                         return new Tuple<int, int>(i,j);

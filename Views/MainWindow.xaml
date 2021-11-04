@@ -8,17 +8,21 @@
         xmlns:models="clr-namespace:GameOfLife.Models"
         xmlns:converters="clr-namespace:GameOfLife.Converters"
         xmlns:views="clr-namespace:GameOfLife.Views"
+        xmlns:System="clr-namespace:System;assembly=System.Runtime"
+        xmlns:enums="clr-namespace:GameOfLife.Enums"
         mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1080"
         SizeChanged="WindowSizeChanged"
-        MinHeight="480" MinWidth="480">
+        MinHeight="480" MinWidth="1080">
 
     <Window.Resources>
+
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Views/ImgButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+            <converters:StatusToStringConverter x:Key="StatusToStringConverter"/>
             <DataTemplate DataType="{x:Type models:Field}" x:Key="cellTemplate">
                 <Rectangle Fill="{Binding Path=FieldStatus, Converter={StaticResource StatusToBrushConverter}}"
                            Width="{Binding ElementName=MainWindowName, Path=WidthCellSize}"
@@ -39,6 +43,14 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </DataTemplate>
+
+            <ObjectDataProvider x:Key="StatusValues"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="enums:Status" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -49,17 +61,32 @@
                 <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\start.png" ContentText="Start" x:Name="Start" Margin="100,40,0,0"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="180" VerticalAlignment="Top" Visibility="Collapsed" x:Name="GamePanel">
-                <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\back.png" ContentText="Previous" x:Name="Previous" Margin="0,40,0,0"/>
+                <CheckBox IsChecked="{Binding Advanced}" Margin="0,40,0,0" Height="80" FontSize="20">Advanced Mode</CheckBox>
+                <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\back.png" ContentText="Previous" x:Name="Previous" Margin="40,40,0,0"/>
                 <views:SizeChooser Size="{Binding ElementName=MainWindowName, Path=NumberOfGenerations, Mode=TwoWay}" ChooserName="Generations:" Margin="10" MinValue="1"/>
                 <views:AnimatedButton PathToImage="D:\domik\Documents\PLA\GameOfLife\Img\forward.png" ContentText="Next" x:Name="Next" Margin="0,40,0,0" />
                 <Button Style="{StaticResource ImgButton}" Tag="D:\domik\Documents\PLA\GameOfLife\Img\save.png" Content="Save" Margin="40,40,0,0" Click="Save"/>
                 <Button Style="{StaticResource ImgButton}" Tag="D:\domik\Documents\PLA\GameOfLife\Img\load.png" Content="Load" Margin="40,40,0,0" Click="Load"/>
-                <CheckBox IsChecked="{Binding Dump}" Margin="40,40,0,0">Dump</CheckBox>
-                <CheckBox IsChecked="{Binding Advanced}" Margin="40,40,0,0">Advanced Mode</CheckBox>
+                <CheckBox IsChecked="{Binding Dump}" Margin="40,40,0,0" Height="80" FontSize="20">Dump</CheckBox>
             </StackPanel>
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="BoardGrid">
-                <ItemsControl x:Name="Board" ItemTemplate="{DynamicResource boardTemplate}"/>
-            </Grid>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed" x:Name="GameBoardPanel">
+                <ListView ItemsSource="{Binding Source={StaticResource StatusValues}}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{Binding Converter={StaticResource StatusToBrushConverter}}"
+                                           Stroke="Black"
+                                           Width="20"
+                                           Height="20"/>
+                                <Label Content="{Binding Converter={StaticResource StatusToStringConverter}}" FontSize="15"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Grid x:Name="BoardGrid">
+                    <ItemsControl x:Name="Board" ItemTemplate="{DynamicResource boardTemplate}"/>
+                </Grid>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

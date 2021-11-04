@@ -36,7 +36,27 @@ namespace GameOfLife
         public int WidthCellSize { get; set; }
         public int HeightCellSize { get; set; }
         public int NumberOfGenerations { get; set; } = 1;
-        public bool Advanced { get; set; } = false;
+
+        private bool _advanced;
+        public bool Advanced
+        {
+            get { return _advanced;}
+            set
+            {
+                _advanced = value;
+                if (value == true)
+                {
+                    board.ApplyPreviosuStatus();
+                    board.ApplyFutureStatus();
+                }
+                else
+                {
+                    board.BoardSpecialToNormal();
+                }
+                CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
+            }
+        }
+
         public bool Dump { get; set; } = false;
 
         public MainWindow()
@@ -56,6 +76,7 @@ namespace GameOfLife
             Board.ItemsSource = board.Fields;
             StartPanel.Visibility = Visibility.Collapsed;
             GamePanel.Visibility = Visibility.Visible;
+            GameBoardPanel.Visibility = Visibility.Visible;
         }
 
         public ICommand ChangeStatusCommand { get { return new RelayCommand<Field>(ChangeStatus); } }
