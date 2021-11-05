@@ -306,7 +306,7 @@ namespace GameOfLife.Models
         public void Dump(int dumpWidth, int dumpHeight, int widthCellSize, int heightCellSize)
         {
             RenderTargetBitmap bitmap = BitmapCreator.MakeBitmap(dumpWidth, dumpHeight, widthCellSize, heightCellSize,
-                Height, Width, Fields);
+                Width, Height, Fields);
             System.IO.Directory.CreateDirectory("Dump");
             using (FileStream stream = new FileStream($"Dump//Gen{Generation}.bmp", FileMode.Create))
             {

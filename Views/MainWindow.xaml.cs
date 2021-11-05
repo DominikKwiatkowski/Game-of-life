@@ -51,7 +51,7 @@ namespace GameOfLife
                 _advanced = value;
                 if (value == true)
                 {
-                    board.ApplyPreviosuStatus();
+                    board.ApplyPreviousStatus();
                     board.ApplyFutureStatus();
                 }
                 else
@@ -108,13 +108,13 @@ namespace GameOfLife
         {
             if (ShapeMode)
             {
-                board.addShape(CurrentShape, field);
+                board.AddShape(CurrentShape, field);
                 ShapeMode = false;
             }
             else
             {
                 board.AddToLast(field);
-                if (field.isAlive())
+                if (field.IsAlive())
                     field.FieldStatus = Status.Dead;
                 else
                     field.FieldStatus = Status.Alive;

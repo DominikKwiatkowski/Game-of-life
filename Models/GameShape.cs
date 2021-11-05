@@ -76,7 +76,7 @@ namespace GameOfLife.Models
             int widthCellSize = dumpWidth / Width;
             int heightCellSize = dumpHeight / Height;
             RenderTargetBitmap bitmap = BitmapCreator.MakeBitmap(dumpWidth, dumpHeight, widthCellSize, heightCellSize,
-                Height, Width, Fields);
+                Width, Height, Fields);
             FilePath = $"{pathToSave}//{Name}.bmp";
             using (FileStream stream = new FileStream(FilePath, FileMode.Create))
             {
