@@ -122,7 +122,6 @@ namespace GameOfLife
 
             if(Advanced)
                 board.Recalculate();
-            CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
 
         public ICommand ChooseShapeCommand { get { return new RelayCommand<GameShape>(ChooseShape); } }
@@ -152,7 +151,6 @@ namespace GameOfLife
             {
                 board.NextGen(Advanced);
             }
-            CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
 
         /// <summary>
@@ -170,7 +168,6 @@ namespace GameOfLife
             {
                 board.PreviousGen(Advanced);
             }
-            CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
 
         /// <summary>
@@ -204,7 +201,6 @@ namespace GameOfLife
                 WidthCellSize = WidthBoardSize / board.Width;
                 HeightCellSize = HeightBoardSize / board.Height;
                 Board.ItemsSource = board.Fields;
-                CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
             }
         }
 
@@ -220,8 +216,6 @@ namespace GameOfLife
             WidthBoardSize = (int)ActualWidth - 280;
             WidthCellSize = WidthBoardSize / WidthValue;
             HeightCellSize = HeightBoardSize / HeightValue;
-            if(board != null)
-                CollectionViewSource.GetDefaultView(Board.ItemsSource).Refresh();
         }
     }
 }

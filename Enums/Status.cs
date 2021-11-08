@@ -10,8 +10,8 @@ namespace GameOfLife.Enums
 {
     public enum Status
     {
-        Alive,
         Dead,
+        Alive,
         Born,
         WillRise,
         WillDie,
